@@ -3,18 +3,21 @@ import operator
 from collections import defaultdict
 from fractions import Fraction
 from functools import cache
-from typing import Callable
+from typing import Callable, Union
+from typing import Union
+
 
 import numpy as np
 from numpy.random import default_rng
 
+numeric = Union[int, Fraction, float]
 # block modules
 
 
 # block numbers
 max_denominator = 1_000_000
 thres = 1e-16  # Reject probabilities smaller than this.
-seed = 3
+seed = 3  # For the random number generator.
 
 
 def toFrac(x: float | int | Fraction):
@@ -29,7 +32,7 @@ def toFrac(x: float | int | Fraction):
 class RV:
     "A random variable whose  keys for the support and values the pmfs."
 
-    def __init__(self, pmf: dict[float, float]):
+    def __init__(self, pmf: dict[numeric, float]):
         self._pmf = self.make_pmf(pmf)
         self._support = np.array(sorted(self._pmf.keys()))
         self._cdf = np.cumsum([self._pmf[k] for k in self._support])
@@ -41,6 +44,7 @@ class RV:
         res: dict[Fraction, float] = defaultdict(float)
         for k, pk in pmf.items():
             res[toFrac(k)] += pk if pk >= thres else 0
+        res = {k: v for k, v in res.items() if v > 0}  # no prob zero events.
         return self.normalize(res)
 
     def normalize(self, pmf):
@@ -50,14 +54,14 @@ class RV:
     # block makepmf
 
     # block pmf
-    def pmf(self, x: float | int | Fraction) -> float:
+    def pmf(self, x: numeric) -> float:
         return self._pmf.get(toFrac(x), 0)
 
     def support(self) -> np.ndarray:
         return self._support
 
     def __len__(self):
-        return len(self._pmf)
+        return len(self._support)
 
     def __repr__(self):
         return "".join(f"{k}: {self._pmf[k]}, " for k in self._support)
@@ -74,7 +78,7 @@ class RV:
 
     # block cdf
     @cache
-    def cdf(self, x: float) -> float:
+    def cdf(self, x: numeric) -> float:
         if x < self._support[0]:
             return 0
         if x >= self._support[-1]:
@@ -88,7 +92,7 @@ class RV:
     # block cdf
 
     # block expected
-    def E(self, f: Callable[[float], float]) -> float:
+    def E(self, f: Callable[[numeric], numeric]) -> float:
         "Compute E(f(X))"
         return sum(f(i) * self.pmf(i) for i in self.support())
 
@@ -124,10 +128,11 @@ class RV:
         other = convert(other)
         return compose_function(operator.add, self, other)
 
+    def __neg__(self):
+        return RV({-k: self.pmf(k) for k in self.support()})
+
     def __sub__(self, other: 'RV') -> 'RV':
-        other = convert(other)
-        rv = RV({-k: other.pmf(k) for k in other.support()})
-        return self + rv
+        return self + (-other)
 
     # block arithmetic
 
@@ -137,13 +142,24 @@ class RV:
         return self.__add__(convert(other))
 
     def __rsub__(self, other: 'RV') -> 'RV':
-        return convert(other).__sub__(self)  # realize that a - b \neq b - a
+        return convert(other).__sub__(self)  # mind the sequence of b - a
 
     # block sums
 
+    # block equality
+    def __eq__(self, other):
+        return self._pmf == other._pmf
+
+    def __hash__(self):
+        return id(self)
+
+    # block equality
+
 
 # block compose
-def compose_function(f: Callable[[float, float], float], X: RV, Y: RV) -> RV:
+def compose_function(
+    f: Callable[[numeric, numeric], float], X: RV, Y: RV
+) -> RV:
     "Make the rv f(X, Y) for the independent rvs X and Y."
     c: defaultdict[Fraction, float] = defaultdict(float)
     for i in X.sortedsupport():
@@ -159,7 +175,7 @@ def compose_function(f: Callable[[float, float], float], X: RV, Y: RV) -> RV:
 
 
 # block apply
-def apply_function(f: Callable[[float], float], X: RV) -> RV:
+def apply_function(f: Callable[[numeric], numeric], X: RV) -> RV:
     "Make the rv f(X)"
     c: defaultdict[Fraction, float] = defaultdict(float)
     for k in X.support():
@@ -192,8 +208,10 @@ def tests():
     U = RV({1: 1})
     V = RV({2: 1})
     X = RV({1: 1 / 3, 2: 2 / 3})
+    Y = RV({-1: 1 / 3, -2: 2 / 3})
 
     assert np.all((U + X).support() == np.array([2, 3]))
+    assert -X == Y
     assert (U + V).pmf(2) == 0
     assert (U + V).pmf(3) == 1
     assert np.isclose(U.var(), 0)

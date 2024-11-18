@@ -6,7 +6,7 @@ import random_variable as rv
 
 # block modfunction
 def mod(a, b):
-    """Compute a modulo b where a can also be a RV."""
+    "Compute a modulo b where a can also be a RV."
     match a:
         case int():
             return a % b
