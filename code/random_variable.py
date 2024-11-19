@@ -134,6 +134,14 @@ class RV:
     def __sub__(self, other: 'RV') -> 'RV':
         return self + (-other)
 
+    def __truediv__(self, other: 'RV') -> 'RV':
+        other = convert(other)
+        return compose_function(operator.truediv, self, other)
+
+    def __mul__(self, other: 'RV') -> 'RV':
+        other = convert(other)
+        return compose_function(operator.mul, self, other)
+
     # block arithmetic
 
     # block sums
