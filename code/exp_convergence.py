@@ -1,7 +1,14 @@
+"""
+Make the figure that shows the convergence rate to the uniform distribution of
+the probability mass function of a random walk on the circle.
+"""
+
 import matplotlib.pyplot as plt
-from latex_figures import fig_in_latex_format
+from latex_figures import apply_figure_settings
 
 import random_variable as rv
+
+apply_figure_settings()
 
 
 # block modfunction

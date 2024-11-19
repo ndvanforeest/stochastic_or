@@ -1,11 +1,18 @@
+"""
+The class RV enables probabilistic arithmetic, such as addition or division, with
+independent discrete random variables.
+
+The comments starting with the code word "block" have an educational purpose.
+In an org mode file I import specific lines of the RV class, and the block comments are used
+to compute the compute the correct line number to include.
+"""
+
 # block modules
 import operator
 from collections import defaultdict
 from fractions import Fraction
 from functools import cache
 from typing import Callable, Union
-from typing import Union
-
 
 import numpy as np
 from numpy.random import default_rng
