@@ -4,7 +4,7 @@ the probability mass function of a random walk on the circle.
 """
 
 import matplotlib.pyplot as plt
-from latex_figures import apply_figure_settings
+from fig_in_latex_format import apply_figure_settings
 
 import random_variable as rv
 

@@ -31,9 +31,9 @@ def compute_L(a, c, L0=0):
     # L0 is the initial queue length
     L = np.empty(len(a))
     L[0] = L0
-    for n in range(1, len(a)):
-        d = min(L[n - 1] + a[n], c[n])
-        L[n] = L[n - 1] + a[n] - d
+    for k in range(1, len(a)):
+        d = min(L[k - 1] + a[k], c[k])
+        L[k] = L[k - 1] + a[k] - d
     return L
 
 
@@ -44,12 +44,12 @@ def compute_L(a, c, L0=0):
 def compute_L_with_control(a, c, e, L0=0):
     L = np.empty(len(a))
     L[0] = L0
-    for n in range(1, len(a)):
-        if L[n - 1] <= thres_low:
-            c[n] -= e
-        elif L[n - 1] >= thres_high:
-            c[n] += e
-        L[n] = max(L[n - 1] + a[n] - c[n], 0)
+    for k in range(1, len(a)):
+        if L[k - 1] <= thres_low:
+            c[k] -= e
+        elif L[k - 1] >= thres_high:
+            c[k] += e
+        L[k] = max(L[k - 1] + a[k] - c[k], 0)
     return L
 
 
@@ -97,7 +97,8 @@ def spread_holidays(p):
 
 # block synchronized
 def synchronized_holidays(p):
-    for j in range(0, p.shape[1], 5):
+    n_cols = p.shape[1]
+    for j in range(0, n_cols, 5):
         p[:, j] = 0
     return p
 

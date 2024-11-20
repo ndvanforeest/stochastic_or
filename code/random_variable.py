@@ -1,10 +1,11 @@
 """
-The class RV enables probabilistic arithmetic, such as addition or division, with
-independent discrete random variables.
+The class RV enables probabilistic arithmetic, such as addition or
+ division, with independent discrete random variables.
 
-The comments starting with the code word "block" have an educational purpose.
-In an org mode file I import specific lines of the RV class, and the block comments are used
-to compute the compute the correct line number to include.
+The comments starting with the code word "block" have an
+educational purpose. In an org mode file I import specific lines of the
+RV class, and the block comments are used to compute the compute the
+correct line number to include.
 """
 
 # block modules
