@@ -29,7 +29,7 @@ seed = 3  # For the random number generator.
 
 
 def toFrac(x: float | int | Fraction):
-    """ "Convert x to fraction of specified precision."""
+    "Convert x to fraction of specified precision."
     return Fraction(x).limit_denominator(max_denominator)
 
 
@@ -94,7 +94,7 @@ class RV:
         return self._cdf[np.searchsorted(self._support, x)]
 
     def sf(self, x: float) -> float:
-        """Survivor function"""
+        "Survivor function"
         return 1 - self.cdf(x)
 
     # block cdf

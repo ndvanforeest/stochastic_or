@@ -24,7 +24,7 @@ tic.tic()
 # block tictoc
 
 # block rvs
-X = rv.RV({4: 1 / 3, 5: 1 / 3, 3: 1 / 3})
+X = rv.RV({3: 1 / 3, 4: 1 / 3, 5: 1 / 3})
 S = rv.RV({4: 1 / 3, 5: 1 / 3, 7: 1 / 3})
 # block rvs
 

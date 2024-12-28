@@ -35,7 +35,7 @@ for t in range(1, N):
 
 # Mind the leadtime L
 for t in range(1, min(L, N)):
-    I[t] = I[t - 1] - D[t]
+    I[t] = I[t - 1] - D[t - 1]
 for t in range(min(L, N), N):
     I[t] = I[t - 1] - D[t - 1] + Q[t - L]
 # block simulation
