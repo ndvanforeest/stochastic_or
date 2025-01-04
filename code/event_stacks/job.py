@@ -10,7 +10,8 @@ class Job:
     load: float
     service_time: float = 0
     departure_time: float = 0
-    queue_length: int = 0
+    q_length_at_arrival: int = 0
+    q_length_at_departure: int = 0
     free_servers: int = 0
     server: Server = None
 

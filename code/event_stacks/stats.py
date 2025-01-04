@@ -1,5 +1,8 @@
-class Statistics(list):
-    def push(self, job):
+from job import Job
+
+
+class Statistics(list[Job]):
+    def push(self, job: Job):
         self.append(job)
 
     def num_jobs(self):
@@ -14,7 +17,7 @@ class Statistics(list):
         return tot / self.num_jobs()
 
     def mean_queue_length(self):
-        tot = sum(job.queue_length for job in self)
+        tot = sum(job.q_length_at_arrival for job in self)
         return tot / self.num_jobs()
 
     def mean_servers_free(self):
