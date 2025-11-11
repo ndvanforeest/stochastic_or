@@ -2,11 +2,9 @@
 
 
 * Contents of the files and directories:
-- ~stochastic-or.pdf~: the main text and exercises with hints and solutions.
-- ~book-sources/~: latex source files for the book. There are many useful LaTeX things that you can learn from the LaTeX sources and the =preamble.sty=.
 - ~code~/: the python code I discuss in the book.
 
 
-* Typos and changes
+* COMMENT Typos and changes
 
 Here is a list of things I changed in the files during the course. (I don't mention very simple typos, like spelling errors).
