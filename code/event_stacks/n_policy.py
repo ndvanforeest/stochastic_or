@@ -1,24 +1,17 @@
 """Queueing behavior under an N policy."""
 
-import numpy as np
-
-from event import ArrivalEvent, DepartureEvent
-from events import Events
-from job import Job
-from queues import Queue
-from server import Server
-from servers import Servers
-from stats import Statistics
-from simulator import Simulation
-
 import matplotlib.pyplot as plt
+import numpy as np
 from latex_figures import fig_in_latex_format
+
+from job import Job
+from simulator import Simulation
 
 
 class N_policy(Simulation):
-    def __init__(self, events, queue, statistics, servers, thres_N):
+    def __init__(self, thres_N):
         self.thres_N = thres_N
-        super().__init__(events, queue, statistics, servers)
+        super().__init__()
 
     def handle_arrival(self, job: Job):
         job.q_length_at_arrival = self.queue.length()
@@ -27,7 +20,7 @@ class N_policy(Simulation):
             self.queue.length() >= self.thres_N
             and self.servers.is_server_available()
         ):
-            self.serve_job(self.queue.pop())
+            self.serve_job(self.queue.pop(), self.servers)
 
 
 num = 300
@@ -40,10 +33,10 @@ X[0] = 0
 A = X.cumsum()
 loads = rng.exponential(scale=1 / mu, size=num)
 jobs = [Job(id=i, arrival_time=A[i], load=loads[i]) for i in range(1, num)]
-servers = Servers()
-servers.push(Server(id=1, rate=1))
-sim = N_policy(Events(), Queue(), Statistics(), servers, thres_N=thres_N)
+
+sim = N_policy(thres_N=thres_N)
 sim.initialize_jobs(jobs)
+sim.initialize_servers(server_rates=[1])
 sim.run()
 
 

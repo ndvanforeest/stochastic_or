@@ -24,14 +24,14 @@ plt.rcParams.update(tex_fonts)
 
 # block queuelength
 def compute_queue_length(a, c, L0=0):
-    """Compute queue length L for  arrivals a,  capacities c
-    and starting level L0"""
+    "Departures and queue lengths for arrivals, capacities, and init level L0."
     L = np.zeros_like(a)
+    d = np.zeros_like(a)
     L[0] = L0
     for i in range(1, len(a)):
-        d = min(c[i], L[i - 1] + a[i])
+        d[i] = min(c[i], L[i - 1] + a[i])
         L[i] = L[i - 1] + a[i] - d
-    return L
+    return d, L
 
 
 # block queuelength
@@ -53,7 +53,7 @@ for seed in range(10):
     rng = np.random.default_rng(seed)
     a = rng.integers(labda - 1, labda + 2, size=num)
     c = mu * np.ones_like(a)
-    L = compute_queue_length(a, c, L0)
+    d, L = compute_queue_length(a, c, L0)
     ax1.plot(x, L, linewidth=0.75)
 # block stability
 
@@ -65,7 +65,7 @@ for seed in range(10):
     rng = np.random.default_rng(seed)
     a = rng.integers(labda - 1, labda + 2, size=num)
     c = mu * np.ones_like(a)
-    L = compute_queue_length(a, c, L0)
+    d, L = compute_queue_length(a, c, L0)
     ax2.plot(x, L, linewidth=0.75)
 
 
@@ -83,15 +83,14 @@ c = int(mu) * np.ones_like(a)
 p = mu - int(mu)  # fractional part of mu
 c += rng.binomial(1, p, size=len(c))
 print(c.mean())  # just a check
-L = compute_queue_length(a, c, L0)
+d, L = compute_queue_length(a, c, L0)
 print(L.mean(), L.var())
 # block meanvar
 
 
 # block makecsv
 def make_vector_mean_scv(mu, scv, num):
-    """Make a vector of length num with a given mean mu
-    and square coefficient of variation scv"""
+    "vector of iid rvs with a given mean mu and scv."
     p = 1 / (1 + scv)
     b = mu / p
     vec = b * rng.binomial(1, p, size=num)
@@ -112,7 +111,7 @@ ax1.set_ylabel("Queue length")
 a = make_vector_mean_scv(mu=6, scv=0, num=num)  # constant arrivals
 for scv in (2, 1, 0.5):
     c = make_vector_mean_scv(mu=6.5, scv=scv, num=num)
-    L = compute_queue_length(a, c, L0=0)
+    d, L = compute_queue_length(a, c, L0)
     ax1.plot(x, L, linewidth=0.5, label=f"$c^2 = {scv}$")
 ax1.legend()
 # block constant
@@ -123,28 +122,12 @@ ax2.set_title("Both variable")
 for scv in (2, 1, 0.5):
     a = make_vector_mean_scv(mu=6, scv=scv, num=num)
     c = make_vector_mean_scv(mu=6.5, scv=scv, num=num)
-    L = compute_queue_length(a, c, L0=0)
+    d, L = compute_queue_length(a, c, L0)
     ax2.plot(x, L, linewidth=0.5, label=f"$c^2 = {scv}$")
 
 fig.tight_layout()
 fig.savefig('../figures/queue-discrete-time-scv.pdf')
 # block variable
-
-
-# block tandem
-def compute_queue_length(a, c, L0=0):
-    """Compute departures d and queue length L for
-    arrivals a,  capacities c and starting level L0"""
-    L = np.zeros_like(a)
-    d = np.zeros_like(a)
-    L[0] = L0
-    for i in range(1, len(a)):
-        d[i] = min(c[i], L[i - 1] + a[i])
-        L[i] = L[i - 1] + a[i] - d[i]
-    return d, L  # return d too
-
-
-# block tandem
 
 
 # block simtandem

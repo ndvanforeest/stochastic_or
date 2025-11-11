@@ -38,7 +38,7 @@ def toFrac(x: float | int | Fraction):
 
 # block startofrv
 class RV:
-    "A random variable whose  keys for the support and values the pmfs."
+    "A random variable whose keys form the support and values the pmfs."
 
     def __init__(self, pmf: dict[numeric, float]):
         self._pmf = self.make_pmf(pmf)
@@ -116,7 +116,7 @@ class RV:
         return self.E(lambda x: x**2) - self.mean() ** 2
 
     @cache
-    def sdv(self) -> float:
+    def std(self) -> float:
         return np.sqrt(self.var())
 
     # block convenience

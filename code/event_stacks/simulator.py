@@ -1,25 +1,37 @@
+import events
+import queues
+import server
+import servers
+import stats
 from event import ArrivalEvent, DepartureEvent
 from job import Job
 
 
 class Simulation:
-    def __init__(self, events, queue, statistics, servers):
-        self.events = events
-        self.queue = queue
-        self.stats = statistics
-        self.servers = servers
+    def __init__(self):
+        self.events = events.Events()
+        self.queue = queues.Queue()
+        self.stats = stats.Statistics()
+        self.servers = servers.Servers()
         self.now = 0
 
     def initialize_jobs(self, jobs):
         for job in jobs:
             self.events.push(ArrivalEvent(job.arrival_time, job))
 
-    def serve_job(self, job: Job):
-        server = self.servers.pop()
+    def initialize_servers(self, server_rates):
+        for i, rate in enumerate(server_rates):
+            self.servers.push(server.Server(id=i, rate=rate))
+
+    def serve_job(self, job: Job, server_pool):
+        "Serve job from a free server of the server pool."
+        if server_pool is None:
+            server_pool = self.servers
+        server = server_pool.pop()
         job.server = server
         job.service_time = job.load / server.rate
         job.departure_time = self.now + job.service_time
-        job.free_servers = self.servers.num_free()
+        job.free_servers = server_pool.num_free()
         self.events.push(DepartureEvent(job.departure_time, job))
 
     def handle_arrival(self, job):

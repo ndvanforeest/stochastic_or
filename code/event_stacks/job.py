@@ -23,10 +23,10 @@ class Job:
     def waiting_time(self):
         return self.sojourn_time - self.service_time
 
-    def __repr__(self):
+    def __str__(self):
         return (
-            f"{self.id},  {self.load}, {self.service_time},"
-            f"{self.arrival_time}, {self.departure_time}"
+            f"{self.id},  load={self.load:.2f}, service={self.service_time:.2f},"
+            f" arr={self.arrival_time:.2f}, dep={self.departure_time:.2f}"
         )
 
     def __hash__(self):
