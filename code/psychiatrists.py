@@ -3,8 +3,8 @@ import numpy as np
 from numpy.random import default_rng
 import matplotlib.pyplot as plt
 
-thres_low = 12
-thres_high = 24
+thres_low = 24
+thres_high = 48
 
 # block modules
 
