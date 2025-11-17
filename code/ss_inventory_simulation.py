@@ -2,6 +2,7 @@ import numpy as np
 from numpy.random import default_rng
 
 import random_variable as rv
+from functions import Plus, Min
 
 demand = rv.RV({0: 1 / 6, 1: 1 / 5, 2: 1 / 4, 3: 1 / 8, 4: 11 / 120, 5: 1 / 6})
 
@@ -33,16 +34,8 @@ def simulate_sS(D, s, S):
 
     return P, IL, Q
 
-def Iplus(IL):
-    return np.maximum(IL, 0)
-
-
-def Imin(IL):
-    return np.maximum(-IL, 0)
-
-
 def cost(IL, Q):
-    return K * (Q > 0).mean() + h * Iplus(IL).mean() + b * Imin(IL).mean()
+    return K * (Q > 0).mean() + h * Plus(IL).mean() + b * Min(IL).mean()
 
 
 def alpha(IL):
@@ -50,7 +43,7 @@ def alpha(IL):
 
 
 def beta(D, IL):
-    return np.minimum(D, Iplus(IL)).sum() / D.sum()
+    return np.minimum(D, Plus(IL)).sum() / D.sum()
 
 
 def alpha_c(IL, Q):
@@ -62,7 +55,7 @@ D = demand.rvs(size=N, random_state=rng)
 P, IL, Q = simulate_sS(D, s=3, S=20)
 
 print(f"{D.mean()=:.2f}, {P.mean()=:.2f}, {IL.mean()=:.2f}, {Q.mean()=:.2f}")
-print(f"{Iplus(IL).mean()=:.2f}, {Imin(IL).mean()=:.2f}")
+print(f"{Plus(IL).mean()=:.2f}, {Min(IL).mean()=:.2f}")
 print(f"{cost(IL, Q)=:.2f}")
 print(f"{alpha(IL)=:.2f}, {beta(D, IL)=:.2f}, {alpha_c(IL, Q)=:.2f}")
 

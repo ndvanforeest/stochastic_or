@@ -8,7 +8,6 @@ RV class, and the block comments are used to compute the compute the
 correct line number to include.
 """
 
-# block modules
 import operator
 from collections import defaultdict
 from fractions import Fraction
@@ -18,11 +17,10 @@ from typing import Callable, Union
 import numpy as np
 from numpy.random import default_rng
 
+from functions import normalize
+
 numeric = Union[int, Fraction, float]
-# block modules
 
-
-# block numbers
 max_denominator = 1_000_000
 thres = 1e-16  # Reject probabilities smaller than this.
 seed = 3  # For the random number generator.
@@ -32,11 +30,6 @@ def toFrac(x: float | int | Fraction):
     "Convert x to fraction of specified precision."
     return Fraction(x).limit_denominator(max_denominator)
 
-
-# block numbers
-
-
-# block startofrv
 class RV:
     "A random variable whose keys form the support and values the pmfs."
 
@@ -45,23 +38,13 @@ class RV:
         self._support = np.array(sorted(self._pmf.keys()))
         self._cdf = np.cumsum([self._pmf[k] for k in self._support])
 
-    # block startofrv
-
-    # block makepmf
     def make_pmf(self, pmf):
         res: dict[Fraction, float] = defaultdict(float)
         for k, pk in pmf.items():
             res[toFrac(k)] += pk if pk >= thres else 0
         res = {k: v for k, v in res.items() if v > 0}  # no prob zero events.
-        return self.normalize(res)
+        return normalize(res)
 
-    def normalize(self, pmf):
-        norm = sum(pmf.values())
-        return {k: pk / norm for k, pk in pmf.items()}
-
-    # block makepmf
-
-    # block pmf
     def pmf(self, x: numeric) -> float:
         return self._pmf.get(toFrac(x), 0)
 
@@ -74,17 +57,6 @@ class RV:
     def __repr__(self):
         return "".join(f"{k}: {self._pmf[k]}, " for k in self._support)
 
-    # block pmf
-
-    # block support
-    @cache
-    def sortedsupport(self) -> np.array:
-        "Return the support sorted in decreasing order of the pmf."
-        return np.array(sorted(self._pmf, key=self._pmf.get, reverse=True))
-
-    # block support
-
-    # block cdf
     @cache
     def cdf(self, x: numeric) -> float:
         if x < self._support[0]:
@@ -97,16 +69,10 @@ class RV:
         "Survivor function"
         return 1 - self.cdf(x)
 
-    # block cdf
-
-    # block expected
     def E(self, f: Callable[[numeric], numeric]) -> float:
         "Compute E(f(X))"
         return sum(f(i) * self.pmf(i) for i in self.support())
 
-    # block expected
-
-    # block convenience
     @cache
     def mean(self) -> float:
         return self.E(lambda x: x)
@@ -119,18 +85,16 @@ class RV:
     def std(self) -> float:
         return np.sqrt(self.var())
 
-    # block convenience
+    @cache
+    def sortedsupport(self) -> np.array:
+        "Return the support sorted in decreasing order of the pmf."
+        return np.array(sorted(self._pmf, key=self._pmf.get, reverse=True))
 
-    # block rvs
     def rvs(self, size: int = 1, random_state=default_rng(seed)) -> np.ndarray:
         "Generate an array with 'size' number of random deviates."
         U: np.ndarray = random_state.uniform(size=size)
         pos: np.ndarray = np.searchsorted(self._cdf, U)
         return self.support()[pos].astype(float)
-
-    # block rvs
-
-    # block arithmetic
 
     def __add__(self, other: 'RV') -> 'RV':
         other = convert(other)
@@ -150,9 +114,6 @@ class RV:
         other = convert(other)
         return compose_function(operator.mul, self, other)
 
-    # block arithmetic
-
-    # block sums
     def __radd__(self, other):
         # support sum([rv for i in ...])
         return self.__add__(convert(other))
@@ -160,19 +121,12 @@ class RV:
     def __rsub__(self, other: 'RV') -> 'RV':
         return convert(other).__sub__(self)  # mind the sequence of b - a
 
-    # block sums
-
-    # block equality
     def __eq__(self, other):
         return self._pmf == other._pmf
 
     def __hash__(self):
         return id(self)
 
-    # block equality
-
-
-# block compose
 def compose_function(
     f: Callable[[numeric, numeric], float], X: RV, Y: RV
 ) -> RV:
@@ -186,11 +140,6 @@ def compose_function(
                 break
     return RV(c)
 
-
-# block compose
-
-
-# block apply
 def apply_function(f: Callable[[numeric], numeric], X: RV) -> RV:
     "Make the rv f(X)"
     c: defaultdict[Fraction, float] = defaultdict(float)
@@ -198,11 +147,6 @@ def apply_function(f: Callable[[numeric], numeric], X: RV) -> RV:
         c[f(k)] += X.pmf(k)
     return RV(c)
 
-
-# block apply
-
-
-# block convert
 def convert(rv):
     "Check and convert to rv if necessary."
     match rv:
@@ -215,11 +159,6 @@ def convert(rv):
         case _:
             raise ValueError("Unknown type passed as a RV")
 
-
-# block convert
-
-
-# block tests
 def tests():
     U = RV({1: 1})
     V = RV({2: 1})
@@ -234,14 +173,3 @@ def tests():
     assert np.isclose(X.pmf(0.99999999999), 1 / 3)
     assert np.isclose(X.mean(), 1 / 3 + 2 * 2 / 3)
     assert np.isclose(X.sf(1), 2 / 3)
-
-
-# block tests
-
-
-def main():
-    tests()
-
-
-if __name__ == '__main__':
-    main()
