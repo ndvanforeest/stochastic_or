@@ -102,6 +102,7 @@ ax4.legend()
 # block export-exp-figure
 fig.tight_layout()
 fig.savefig("../figures/IBD_exponential.pdf")
+fig.savefig("../figures/IBD_exponential.png", dpi=300)
 # block export-exp-figure
 
 quit()

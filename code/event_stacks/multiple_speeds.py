@@ -26,9 +26,9 @@ sim.initialize_servers(server_rates=[1, 0.1, 0.01])
 sim.run()
 
 mm1 = mmc.MMC(labda, mu, c=1)
-print(f"W: {sim.stats.mean_waiting_time():0.2f}, {mm1.EW:0.2f}")
-print(f"J: {sim.stats.mean_sojourn_time():0.2f}, {mm1.EJ:0.2f}")
-print(f"Q: {sim.stats.mean_queue_length():0.2f}, {mm1.EQ:0.2f}")
+print(f"W: sim: {sim.stats.mean_waiting_time():0.2f}, exact: {mm1.EW:0.2f}")
+print(f"J: sim: {sim.stats.mean_sojourn_time():0.2f}, exact: {mm1.EJ:0.2f}")
+print(f"Q: sim: {sim.stats.mean_queue_length():0.2f}, exact: {mm1.EQ:0.2f}")
 
 count = Counter([j.free_servers for j in sim.stats])
 print(count)

@@ -30,6 +30,7 @@ def toFrac(x: float | int | Fraction):
     "Convert x to fraction of specified precision."
     return Fraction(x).limit_denominator(max_denominator)
 
+
 class RV:
     "A random variable whose keys form the support and values the pmfs."
 
@@ -119,13 +120,16 @@ class RV:
         return self.__add__(convert(other))
 
     def __rsub__(self, other: 'RV') -> 'RV':
-        return convert(other).__sub__(self)  # mind the sequence of b - a
+        print("hoi")
+        return self + (-other)
+        # return convert(other).__sub__(self)  # mind the sequence of b - a
 
     def __eq__(self, other):
         return self._pmf == other._pmf
 
     def __hash__(self):
         return id(self)
+
 
 def compose_function(
     f: Callable[[numeric, numeric], float], X: RV, Y: RV
@@ -140,12 +144,14 @@ def compose_function(
                 break
     return RV(c)
 
+
 def apply_function(f: Callable[[numeric], numeric], X: RV) -> RV:
     "Make the rv f(X)"
     c: defaultdict[Fraction, float] = defaultdict(float)
     for k in X.support():
         c[f(k)] += X.pmf(k)
     return RV(c)
+
 
 def convert(rv):
     "Check and convert to rv if necessary."
@@ -158,6 +164,7 @@ def convert(rv):
             return RV({rv: 1})  # A float is a shift too.
         case _:
             raise ValueError("Unknown type passed as a RV")
+
 
 def tests():
     U = RV({1: 1})

@@ -23,15 +23,15 @@ class Simulation:
         for i, rate in enumerate(server_rates):
             self.servers.push(server.Server(id=i, rate=rate))
 
-    def serve_job(self, job: Job, server_pool):
+    def serve_job(self, job: Job, server_pool=None):
         "Serve job from a free server of the server pool."
         if server_pool is None:
             server_pool = self.servers
         server = server_pool.pop()
+        job.free_servers = server_pool.num_free()
         job.server = server
         job.service_time = job.load / server.rate
         job.departure_time = self.now + job.service_time
-        job.free_servers = server_pool.num_free()
         self.events.push(DepartureEvent(job.departure_time, job))
 
     def handle_arrival(self, job):
@@ -46,7 +46,7 @@ class Simulation:
         self.stats.push(job)
         if not self.queue.is_empty():
             self.serve_job(self.queue.pop())
-        job.q_lenght_at_departure = self.queue.length()
+        job.q_length_at_departure = self.queue.length()
 
     def run(self):
         while not self.events.is_empty():

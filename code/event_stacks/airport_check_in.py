@@ -1,6 +1,5 @@
 """Queueing at an airport check-in desk with business and economy customers."""
 
-# block modules
 from dataclasses import dataclass
 
 import numpy as np
@@ -13,10 +12,6 @@ import servers
 import simulator
 import stats
 
-# block modules
-
-
-# block jobs
 ECONOMY = 0
 BUSINESS = 1
 
@@ -30,11 +25,6 @@ class Job(job.Job):
 class Server(server.Server):
     type: int = ECONOMY
 
-
-# block jobs
-
-
-# block simulator
 class Simulation(simulator.Simulation):
     def __init__(self, num_e_servers, num_b_servers, share=False):
         self.share = share
@@ -83,10 +73,6 @@ class Simulation(simulator.Simulation):
         else:
             raise ValueError("Unknown job type")
 
-
-# block simulator
-
-# block setup
 rng = np.random.default_rng(3)
 check_in_window = 120  # minutes
 desks_open = check_in_window + 30
@@ -112,17 +98,8 @@ b_jobs = [
     for i in range(1, num)
 ]
 
-# block setup
-
-# block run
 num_e_servers, num_b_servers = 4, 2
-sim = Simulation(num_e_servers, num_b_servers, share=False)
-sim.initialize_jobs(e_jobs)
-sim.initialize_jobs(b_jobs)
-sim.run()
-# block run
 
-# block checks
 e_work = sum(j.load for j in e_jobs)
 e_service_available = num_e_servers * desks_open
 print(f"Check e capacity: {e_work=:.0f}, {e_service_available=:.0f}")
@@ -133,11 +110,11 @@ tot_work = e_work + b_work
 tot_service_available = (num_e_servers + num_b_servers) * desks_open
 print(f"Check b capacity: {tot_work=:.0f}, {tot_service_available=:.0f}")
 
+sim = Simulation(num_e_servers, num_b_servers, share=False)
+sim.initialize_jobs(e_jobs)
+sim.initialize_jobs(b_jobs)
+sim.run()
 
-# block checks
-
-
-# block kpis
 def mean(iterable):
     "Compute mean of values in an iterable."
     total = count = 0
@@ -157,4 +134,28 @@ print(f"Overall mean waiting time: {sim.stats.mean_waiting_time():.2f}")
 print(f"mean waiting e jobs: {mean(job.waiting_time for job in e_jobs):.2f}")
 print(f"mean waiting b jobs: {mean(job.waiting_time for job in b_jobs):.2f}")
 
-# block kpis
+sim = Simulation(num_e_servers + 1, num_b_servers, share=False)
+sim.initialize_jobs(e_jobs)
+sim.initialize_jobs(b_jobs)
+sim.run()
+
+print(f"Last departure e job: {e_jobs[-1].departure_time:.2f}")
+print(f"Last departure b job: {b_jobs[-1].departure_time:.2f}")
+print(f"Largest waiting time e job: {max(j.waiting_time for j in e_jobs):.2f}")
+print(f"Largest waiting time b job: {max(j.waiting_time for j in b_jobs):.2f}")
+print(f"Overall mean waiting time: {sim.stats.mean_waiting_time():.2f}")
+print(f"mean waiting e jobs: {mean(job.waiting_time for job in e_jobs):.2f}")
+print(f"mean waiting b jobs: {mean(job.waiting_time for job in b_jobs):.2f}")
+
+sim = Simulation(num_e_servers, num_b_servers, share=True)
+sim.initialize_jobs(e_jobs)
+sim.initialize_jobs(b_jobs)
+sim.run()
+
+print(f"Last departure e job: {e_jobs[-1].departure_time:.2f}")
+print(f"Last departure b job: {b_jobs[-1].departure_time:.2f}")
+print(f"Largest waiting time e job: {max(j.waiting_time for j in e_jobs):.2f}")
+print(f"Largest waiting time b job: {max(j.waiting_time for j in b_jobs):.2f}")
+print(f"Overall mean waiting time: {sim.stats.mean_waiting_time():.2f}")
+print(f"mean waiting e jobs: {mean(job.waiting_time for job in e_jobs):.2f}")
+print(f"mean waiting b jobs: {mean(job.waiting_time for job in b_jobs):.2f}")

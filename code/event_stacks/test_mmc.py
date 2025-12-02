@@ -24,6 +24,6 @@ sim.run()
 
 
 mm2 = mmc.MMC(labda, mu, c=2)
-print("W: ", sim.stats.mean_waiting_time(), mm2.EW)
-print("J: ", sim.stats.mean_sojourn_time(), mm2.EJ)
-print("Q: ", sim.stats.mean_queue_length(), mm2.EQ)
+print(f"W: {sim.stats.mean_waiting_time():0.4f}, {mm2.EW=:.4f}")
+print(f"J: {sim.stats.mean_sojourn_time():0.4f}, {mm2.EJ=:.4f}")
+print(f"Q: {sim.stats.mean_queue_length():0.4f}, {mm2.EQ=:.4f}")
