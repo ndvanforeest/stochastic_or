@@ -4,7 +4,7 @@ import numpy as np
 import random_variable as rv
 from functions import Plus, Min
 
-from lighthouse_case import D, K, N, l, h, b
+from lighthouse_case import D, l, h, b
 
 class Basestock:
     """Implements KPIs for a basestock inventory system."""

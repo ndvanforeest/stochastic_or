@@ -68,6 +68,5 @@ ax2.set_title("Cycle 10")
 ax2.set_xlabel("Iteration")
 ax2.legend()
 
-
 fig.tight_layout()
-fig.savefig("../figures/exp_convergence.pdf")
+fig.savefig("../figures/exp_convergence.png", dpi=300)

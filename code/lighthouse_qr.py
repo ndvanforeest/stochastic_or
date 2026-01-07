@@ -1,5 +1,4 @@
 from functools import cache
-import numpy as np
 
 import random_variable as rv
 from functions import Plus, Min

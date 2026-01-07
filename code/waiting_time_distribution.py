@@ -9,7 +9,6 @@ import random_variable as rv
 # block modules
 
 # block seaborn
-from latex_figures import fig_in_latex_format
 
 # block seaborn
 

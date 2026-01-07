@@ -1,29 +1,16 @@
 # block modules
 import numpy as np
 from numpy.random import default_rng
-import matplotlib.pyplot as plt
+
+# from fig_in_latex_format import apply_figure_settings
+
+# apply_figure_settings()
+
 
 thres_low = 24
 thres_high = 48
 
 # block modules
-
-# block seaborn
-import seaborn as sns
-
-sns.set_style("whitegrid")
-tex_fonts = {
-    "text.usetex": True,
-    "font.family": "fourier",
-    # Use 10pt font in plots, to match 10pt font in document
-    "axes.labelsize": 10,
-    "font.size": 10,
-    "legend.fontsize": 8,
-    "xtick.labelsize": 8,
-    "ytick.labelsize": 8,
-}
-plt.rcParams.update(tex_fonts)
-# block seaborn
 
 
 # block simple queue
@@ -36,6 +23,13 @@ def compute_L(a, c, L0=0):
         L[k] = L[k - 1] + a[k] - d
     return L
 
+
+a = np.ones(5)
+c = np.ones(len(a))
+L = compute_L(a, c)
+print(L)
+
+quit()
 
 # block simple queue
 
@@ -148,7 +142,7 @@ LL[3, :] = compute_L_with_control(a, c, 5)
 
 # block figures
 fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(6, 3), sharey=True)
-ax1.set_title("No control on $Q$")
+ax1.set_title("No control on $L$")
 ax1.set_ylabel("Queue length")
 ax1.set_xlabel("Time (weeks)")
 
@@ -156,7 +150,7 @@ ax1.plot(L.min(axis=0), ":", label="min", color='k', lw=0.5)
 ax1.plot(L.max(axis=0), "-", label="max", color="k", lw=0.5)
 ax1.legend()
 
-ax2.set_title("Control on $Q$")
+ax2.set_title("Control on $L$")
 ax2.set_xlabel("Time (weeks)")
 ax2.plot(LL[1], label="$e = 1$", color='green', lw=0.8)
 ax2.plot(LL[2], label="$e = 2$", color='blue', lw=0.5)
@@ -164,5 +158,5 @@ ax2.plot(LL[3], label="$e = 5$", color='red', lw=0.5)
 ax2.legend()
 
 fig.tight_layout()
-fig.savefig("../figures/psychiatrists.pdf")
+fig.savefig("../figures/psychiatrists.png", dpi=300)
 # block figures

@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-from latex_figures import fig_in_latex_format
 
 labda = 3
 # per hour
