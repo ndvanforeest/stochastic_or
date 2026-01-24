@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.random import default_rng
 
+import random_variable as rv
 from  functions import Plus, Min
 
 from lighthouse_case import D, K, N, l, h, b
@@ -16,7 +17,7 @@ def simulate_sS(demands, s, S):
         Q[t] = (S - Pprime) * (Pprime <= s)
         P[t] = Pprime + Q[t]
 
-    for t in range(1, N):
+    for t in range(1, l):
         IL[t] = IL[t - 1] - demands[t - 1]
     for t in range(min(l, N), N):
         IL[t] = IL[t - 1] - demands[t - 1] + Q[t - l]

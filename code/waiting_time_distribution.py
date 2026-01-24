@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pytictoc import TicToc
 
-import random_variable as rv
+from random_variable import NumericRV as RV
 
 
 # block modules
@@ -23,19 +23,19 @@ tic.tic()
 # block tictoc
 
 # block rvs
-X = rv.RV({3: 1 / 3, 4: 1 / 3, 5: 1 / 3})
-S = rv.RV({4: 1 / 3, 5: 1 / 3, 7: 1 / 3})
+X = RV({3: 1 / 3, 4: 1 / 3, 5: 1 / 3})
+S = RV({4: 1 / 3, 5: 1 / 3, 7: 1 / 3})
 # block rvs
 
 # block computedist
 horizon = 30
-A = rv.RV({0: 1})  # Arrival time A_0
+A = RV({0: 1})  # Arrival time A_0
 A += X  # Arrival time A_1
-W = rv.RV({0: 1})  # Waiting time W_1
+W = RV({0: 1})  # Waiting time W_1
 # Mind that we start at 2 instead of 1
 for i in range(2, horizon):
     A += X
-    W = rv.apply_function(Plus, W + S - X)
+    W = (W + S - X).map(Plus)
 
 D = A + W + S
 
@@ -170,15 +170,15 @@ fig.savefig("../figures/waiting_time_distribution_pmf.pdf")
 """
 Case with 4.1
 """
-X = rv.RV({4.1: 1 / 3, 5: 1 / 3, 3: 1 / 3})
-S = rv.RV({4: 1 / 3, 5: 1 / 3, 7: 1 / 3})
+X = RV({4.1: 1 / 3, 5: 1 / 3, 3: 1 / 3})
+S = RV({4: 1 / 3, 5: 1 / 3, 7: 1 / 3})
 
 horizon = 30
-A = rv.RV({0: 1})  # arrival time
-W = rv.RV({0: 1})  # waiting time
+A = RV({0: 1})  # arrival time
+W = RV({0: 1})  # waiting time
 for i in range(1, horizon):
     A += X
-    W = rv.apply_function(Plus, W + S - X)
+    W = (W + S - X).map(Plus)
 
 D = A + W + S
 
@@ -188,7 +188,7 @@ nth_waiting_time = []
 nth_departure = []
 rng = np.random.default_rng(3)
 for _ in range(num_runs):
-    x = X.rvs(horizon, rng)
+    x = X.rvs(horizon, rng).astype(float)
     s = S.rvs(horizon, rng)
     x[0] = s[0] = 0
 
@@ -198,7 +198,6 @@ for _ in range(num_runs):
         w = Plus(w + s[i - 1] - x[i])
     nth_waiting_time.append(w)
     nth_departure.append(a[i] + w + s[i])
-
 
 fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(6, 3), sharey=True)
 ax1.set_title("Departure times")
@@ -213,6 +212,7 @@ ax1.hist(
     lw=0.7,
     label="sim",
 )
+
 x = D.support()
 y = [D.pmf(k) for k in D.support()]
 ax1.plot(x, y, 'ko', ms=1)

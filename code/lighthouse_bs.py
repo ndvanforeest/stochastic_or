@@ -1,10 +1,10 @@
 from functools import cache
 import numpy as np
 
-import random_variable as rv
+from random_variable import NumericRV as RV
 from functions import Plus, Min
 
-from lighthouse_case import D, l, h, b
+from lighthouse_case import D, K, N, l, h, b
 
 class Basestock:
     """Implements KPIs for a basestock inventory system."""
@@ -14,7 +14,7 @@ class Basestock:
         self.l = l
         self.h = h
         self.b = b
-        self.X = sum(self.D for _ in range(l)) if l > 0 else rv.RV({0: 1})
+        self.X = sum(self.D for _ in range(l)) if l > 0 else RV({0: 1})
 
     @cache
     def IP(self, S):
@@ -26,11 +26,11 @@ class Basestock:
 
     @cache
     def Imin(self, S):
-        return rv.apply_function(lambda x: Min(x), self.IL(S))
+        return self.IL(S).map(lambda x: Min(x))
 
     @cache
     def Iplus(self, S):
-        return rv.apply_function(lambda x: Plus(x), self.IL(S))
+        return self.IL(S).map(lambda x: Plus(x))
 
     def cost(self, S):
         return self.b * self.Imin(S).mean() + self.h * self.Iplus(S).mean()
@@ -39,7 +39,7 @@ class Basestock:
         return (self.IL(S) - self.D).sf(-1)
 
     def beta(self, S):
-        m = rv.compose_function(lambda x, y: min(x, y), self.D, self.Iplus(S))
+        m = RV.map2(self.D, self.Iplus(S), lambda x, y: min(x, y))
         return m.mean() / self.D.mean()
 
 S = 5

@@ -1,7 +1,9 @@
 from functools import cache
 
-import random_variable as rv
+from random_variable import NumericRV as RV
 from functions import Plus, Min
+
+from lighthouse_case import D, K, N, l, h, b
 
 
 class Qr:
@@ -10,11 +12,11 @@ class Qr:
         self.l = l
         self.h = h
         self.b = b
-        self.X = sum(self.D for _ in range(l)) if l > 0 else rv.RV({0: 1})
+        self.X = sum(self.D for _ in range(l)) if l > 0 else RV({0: 1})
 
     @cache
     def IP(self, Q, r):
-        return rv.RV({i: 1 / Q for i in range(r + 1, r + Q + 1)})
+        return RV({i: 1 / Q for i in range(r + 1, r + Q + 1)})
 
     @cache
     def IL(self, Q, r):
@@ -22,11 +24,11 @@ class Qr:
 
     @cache
     def Imin(self, Q, r):
-        return rv.apply_function(lambda x: Min(x), self.IL(Q, r))
+        return self.IL(Q, r).map(lambda x: Min(x))
 
     @cache
     def Iplus(self, Q, r):
-        return rv.apply_function(lambda x: Plus(x), self.IL(Q, r))
+        return self.IL(Q, r).map(lambda x: Plus(x))
 
     def cost(self, Q, r):
         return (
@@ -37,16 +39,9 @@ class Qr:
         return (self.IL(Q, r) - self.D).sf(-1)
 
     def beta(self, Q, r):
-        m = rv.compose_function(
-            lambda x, y: min(x, y), self.D, self.Iplus(Q, r)
-        )
+        m = RV.map2(self.D, self.Iplus(Q, r), lambda x, y: min(x, y))
         return m.mean() / self.D.mean()
 
-D = rv.RV({0: 1 / 6, 1: 1 / 5, 2: 1 / 4, 3: 1 / 8, 4: 11 / 120, 5: 1 / 6})
-l = 2
-c = 100  # buying price
-b = 0.1 * c  # backlog cost
-h = 0.5 * c / 30  # holding cost
 
 qr = Qr(D, l, h, b)
 Q, r = 3, 10
