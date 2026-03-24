@@ -1,17 +1,26 @@
 * Queueing simulations with event stacks
 
 Event stacks are the soul of discrete event simulations.
-In this project we demonstrate how to use this concept to a simulate of a multi server queue and a  queue that serves jobs based on priority.
+In this project we demonstrate how to use this concept to simulate a multi server queue and a queue that serves jobs based on priority.
 
-- Events.py contains the different types of events and the event stack that is implemented as heapq.
-- job.py implements the regular job class and a priority job
-- servers.py has two different server types: one derives from deque, the other from heapq to be able to select servers based on some specific rule
-- simulator.py contains the simulation class
-- stats.py is for the statistics computations as the end of the simulation
+** Core modules
 
+- ~event.py~ defines arrival and departure events
+- ~events.py~ implements the event stack as a heapq
+- ~job.py~ implements the job class
+- ~priority_job.py~ extends jobs with priority levels
+- ~queues.py~ implements the queue
+- ~server.py~ defines the server class
+- ~servers.py~ manages collections of servers, with selection based on speed
+- ~simulator.py~ contains the simulation class
+- ~stats.py~ handles statistics computations at the end of the simulation
+- ~mmc.py~ computes exact results for the M/M/c queue
 
-The following files contains tests and experiments, and show how to run the simulations
-- test_mmc.py compares the result of the simulation to the exact results that we compute for M/M/c queue
-- multiple_speeds.py does experiments with servers with different speeds
-- priority_jobs.py does experiments for a single server queue but with jobs with different priorities
-- n_policies.py shows how to implement a non-trivial control policy for the server
+** Experiments and examples
+
+- ~test_mmc.py~ compares the simulation results to exact M/M/c results
+- ~multiple_speeds.py~ experiments with servers with different speeds
+- ~priority_jobs.py~ experiments with jobs with different priorities
+- ~n_policy.py~ implements a non-trivial N-policy control for the server
+- ~n_policies_figure.py~ generates the N-policy figure for the book
+- ~airport_check_in.py~ simulates an airport check-in desk with business and economy customers

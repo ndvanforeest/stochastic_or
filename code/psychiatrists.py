@@ -1,19 +1,15 @@
-# block modules
 import numpy as np
 from numpy.random import default_rng
+import matplotlib.pyplot as plt
 
-# from fig_in_latex_format import apply_figure_settings
+from latex_figures import apply_figure_settings
 
-# apply_figure_settings()
+apply_figure_settings(use=True)
 
 
 thres_low = 24
 thres_high = 48
 
-# block modules
-
-
-# block simple queue
 def compute_L(a, c, L0=0):
     # L0 is the initial queue length
     L = np.empty(len(a))
@@ -23,34 +19,6 @@ def compute_L(a, c, L0=0):
         L[k] = L[k - 1] + a[k] - d
     return L
 
-
-a = np.ones(5)
-c = np.ones(len(a))
-L = compute_L(a, c)
-print(L)
-
-quit()
-
-# block simple queue
-
-
-# block control
-def compute_L_with_control(a, c, e, L0=0):
-    L = np.empty(len(a))
-    L[0] = L0
-    for k in range(1, len(a)):
-        if L[k - 1] <= thres_low:
-            c[k] -= e
-        elif L[k - 1] >= thres_high:
-            c[k] += e
-        L[k] = max(L[k - 1] + a[k] - c[k], 0)
-    return L
-
-
-# block control
-
-
-# block unbalanced
 def unbalanced_load(n):
     p = np.empty([5, n])
     p[0, :] = 1 * np.ones(n)
@@ -60,11 +28,6 @@ def unbalanced_load(n):
     p[4, :] = 9 * np.ones(n)
     return p
 
-
-# block unbalanced
-
-
-# block Balanced
 def balanced_load(n):
     p = np.empty([5, n])
     p[0, :] = 2 * np.ones(n)
@@ -74,40 +37,23 @@ def balanced_load(n):
     p[4, :] = 4 * np.ones(n)
     return p
 
-
-# block Balanced
-
-
-# block spread
 def spread_holidays(p):
     n_cols = p.shape[1]
     for j in range(n_cols):
         p[j % 5, j] = 0
     return p
 
-
-# block spread
-
-
-# block synchronized
 def synchronized_holidays(p):
     n_cols = p.shape[1]
     for j in range(0, n_cols, 5):
         p[:, j] = 0
     return p
 
-
-# block synchronized
-
-
-# block start sim
 rng = default_rng(3)
 num_weeks = 1000
 a = rng.poisson(11.8, num_weeks)
 L = np.zeros((4, len(a)))
-# block start sim
 
-# block scenarios
 p = balanced_load(len(a))
 p = spread_holidays(p)
 c = np.sum(p, axis=0)
@@ -127,20 +73,25 @@ p = unbalanced_load(len(a))
 p = spread_holidays(p)
 c = np.sum(p, axis=0)
 L[3, :] = compute_L(a, c)
-# block scenarios
 
+def compute_L_with_control(a, c, e, L0=0):
+    L = np.empty(len(a))
+    L[0] = L0
+    for k in range(1, len(a)):
+        if L[k - 1] <= thres_low:
+            c[k] -= e
+        elif L[k - 1] >= thres_high:
+            c[k] += e
+        L[k] = max(L[k - 1] + a[k] - c[k], 0)
+    return L
 
-# block plusminus
 c = 12 * np.ones_like(a)
 LL = np.zeros((4, len(a)))
 LL[0, :] = compute_L(a, c)
 LL[1, :] = compute_L_with_control(a, c, 1)
 LL[2, :] = compute_L_with_control(a, c, 2)
 LL[3, :] = compute_L_with_control(a, c, 5)
-# block plusminus
 
-
-# block figures
 fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(6, 3), sharey=True)
 ax1.set_title("No control on $L$")
 ax1.set_ylabel("Queue length")
@@ -158,5 +109,5 @@ ax2.plot(LL[3], label="$e = 5$", color='red', lw=0.5)
 ax2.legend()
 
 fig.tight_layout()
+fig.savefig("../figures/psychiatrists.pdf")
 fig.savefig("../figures/psychiatrists.png", dpi=300)
-# block figures

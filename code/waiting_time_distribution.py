@@ -1,33 +1,17 @@
-# block modules
 import numpy as np
 import matplotlib.pyplot as plt
-from pytictoc import TicToc
 
+from functions import Plus
 from random_variable import NumericRV as RV
 
+from latex_figures import apply_figure_settings
 
-# block modules
+apply_figure_settings(use=True)
 
-# block seaborn
-
-# block seaborn
-
-
-# block tictoc
-def Plus(x):
-    return max(x, 0)
-
-
-tic = TicToc()
-tic.tic()
-# block tictoc
-
-# block rvs
 X = RV({3: 1 / 3, 4: 1 / 3, 5: 1 / 3})
 S = RV({4: 1 / 3, 5: 1 / 3, 7: 1 / 3})
-# block rvs
+print(f"{X.mean()=:0.2f}, {S.mean()=:0.2f}")
 
-# block computedist
 horizon = 30
 A = RV({0: 1})  # Arrival time A_0
 A += X  # Arrival time A_1
@@ -37,114 +21,52 @@ for i in range(2, horizon):
     A += X
     W = (W + S - X).map(Plus)
 
-D = A + W + S
+D = A + W + S # These are not the departure times!
 
-tic.toc()
-# block computedist
+print(f"{W.mean()=:0.2f}, {W.std()=:0.2f}")
+print(f"{D.mean()=:0.2f}, {D.std()=:0.2f}")
 
-# block simulation
 num_runs = 1000
-nth_waiting_time = np.zeros(num_runs)
-nth_departure = np.zeros(num_runs)
+w30 = np.zeros(num_runs)
+d30 = np.zeros(num_runs)
 rng = np.random.default_rng(3)
-for n in range(num_runs):
+for run_no in range(num_runs):
     x = X.rvs(horizon, rng)
     s = S.rvs(horizon, rng)
-    x[0] = s[0] = 0
-
-    a = x.cumsum()
-    w = 0
+    x[0] = s[0] = w = 0
     for i in range(1, horizon):
         w = Plus(w + s[i - 1] - x[i])
-    nth_waiting_time[n] = w
-    nth_departure[n] = a[i] + w + s[i]
 
-# check KPIs
-print(D.mean(), nth_departure.mean())
-print(D.var(), nth_departure.var())
+    w30[run_no] = w
+    a = x.cumsum()
+    d30[run_no] = a[i] + w + s[i]
 
-tic.toc()
-# block simulation
+print(f"{w30.mean()=:0.2f}, {w30.std()=:0.2f}")
+print(f"{d30.mean()=:0.2f}, {d30.std()=:0.2f}")
 
-# block figdeparturetimes
-fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(6, 3), sharey=True)
-ax1.set_title("Departure times")
+fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(6, 3))
+ax1.set_title("Waiting times cdf")
 ax1.set_xlabel("Time")
-ax1.hist(
-    nth_departure,
-    bins=30,
-    density=True,
-    cumulative=True,
-    histtype='step',
-    align="right",
-    color='k',
-    lw=0.5,
-    label="sim",
-)
 ax1.plot(
-    D.support(), [D.cdf(k) for k in D.support()], c='k', lw=0.75, label="exact"
-)
-ax1.legend()
-# block figdeparturetimes
-
-# block figwaitingtimes
-ax2.set_title("Waiting times")
-ax2.set_xlabel("Time")
-ax2.hist(
-    nth_waiting_time,
-    bins=30,
-    density=True,
-    cumulative=True,
-    histtype='step',
-    align="right",
-    color='k',
-    lw=0.5,
-    label="sim",
-)
-ax2.plot(
     W.support(), [W.cdf(k) for k in W.support()], c='k', lw=0.75, label="exact"
 )
-# block figwaitingtimes
-
-# block figsave
-fig.tight_layout()
-fig.savefig("../figures/waiting_time_distribution.pdf")
-# block figsave
-
-
-"""
-Plot the densities
-"""
-
-fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(6, 3), sharey=True)
-ax1.set_title("Departure times")
-ax1.set_xlabel("Time")
 ax1.hist(
-    nth_departure,
+    w30,
     bins=30,
     density=True,
+    cumulative=True,
     histtype='step',
     align="right",
     color='k',
-    lw=0.7,
+    lw=0.5,
     label="sim",
-)
-x = D.support()
-y = [D.pmf(k) for k in D.support()]
-ax1.plot(x, y, 'ko', ms=1)
-ax1.plot(
-    x,
-    y,
-    color='k',
-    lw=0.75,
-    label="exact",
 )
 ax1.legend()
 
-ax2.set_title("Waiting times")
+ax2.set_title("Waiting times pmf")
 ax2.set_xlabel("Time")
 ax2.hist(
-    nth_waiting_time,
+    w30,
     bins=30,
     density=True,
     histtype='step',
@@ -155,21 +77,11 @@ ax2.hist(
 )
 x = W.support()
 y = [W.pmf(k) for k in W.support()]
-ax2.plot(x, y, 'ko', ms=1)
-ax2.plot(
-    x,
-    y,
-    color='k',
-    lw=0.75,
-    label="exact",
-)
-
+ax2.plot(x, y, color='k', lw=0.75, label="exact")
+ax2.legend()
 fig.tight_layout()
-fig.savefig("../figures/waiting_time_distribution_pmf.pdf")
+fig.savefig("../figures/waiting_time_distribution.pdf")
 
-"""
-Case with 4.1
-"""
 X = RV({4.1: 1 / 3, 5: 1 / 3, 3: 1 / 3})
 S = RV({4: 1 / 3, 5: 1 / 3, 7: 1 / 3})
 
@@ -180,72 +92,16 @@ for i in range(1, horizon):
     A += X
     W = (W + S - X).map(Plus)
 
-D = A + W + S
-
-
-num_runs = 1000
-nth_waiting_time = []
-nth_departure = []
-rng = np.random.default_rng(3)
-for _ in range(num_runs):
-    x = X.rvs(horizon, rng).astype(float)
-    s = S.rvs(horizon, rng)
-    x[0] = s[0] = 0
-
-    a = x.cumsum()
-    w = 0
-    for i in range(1, horizon):
-        w = Plus(w + s[i - 1] - x[i])
-    nth_waiting_time.append(w)
-    nth_departure.append(a[i] + w + s[i])
-
-fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(6, 3), sharey=True)
-ax1.set_title("Departure times")
+fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(6, 3))
+ax1.set_title("Waiting times cdf")
 ax1.set_xlabel("Time")
-ax1.hist(
-    nth_departure,
-    bins=30,
-    density=True,
-    histtype='step',
-    align="right",
-    color='k',
-    lw=0.7,
-    label="sim",
-)
-
-x = D.support()
-y = [D.pmf(k) for k in D.support()]
-ax1.plot(x, y, 'ko', ms=1)
 ax1.plot(
-    x,
-    y,
-    color='k',
-    lw=0.75,
-    label="exact",
+    W.support(), [W.cdf(k) for k in W.support()], c='k', lw=0.75, label="exact"
 )
-ax1.legend()
-
-ax2.set_title("Waiting times")
+ax2.set_title("Waiting times pmf")
 ax2.set_xlabel("Time")
-ax2.hist(
-    nth_waiting_time,
-    bins=30,
-    density=True,
-    histtype='step',
-    align="right",
-    color='k',
-    lw=0.7,
-    label="sim",
-)
-x = W.support()
-y = [W.pmf(k) for k in W.support()]
-ax2.plot(x, y, 'ko', ms=1)
 ax2.plot(
-    x,
-    y,
-    color='k',
-    lw=0.75,
-    label="exact",
+    W.support(), [W.pmf(k) for k in W.support()], c='k', lw=0.75, label="exact"
 )
 
 fig.tight_layout()

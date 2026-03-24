@@ -1,27 +1,27 @@
-from lighthouse_case import D, K, b, h, l
-from sSTsS import BasestockPolicy, TSPolicy, TsSPolicy, sSPolicy
+from lighthouse_case import D, K, b, h, leadtime
+from TsS import TSPolicy, TsSPolicy
+from ss import sSPolicy
 
-S = 20
-s = 16
 
-sS = sSPolicy(D, l, h, b, K)
+sS = sSPolicy(D, leadtime, h, b, K)
 
+s, S = 16, 20
 print("sS policy")
-print("hitting time:", sS.hitting_time(s, S))
-print("hitting cost:", sS.hitting_cost(s, S))
-print("average cost:", sS.average_cost(s, S))
+print(f"hitting time: {sS.hitting_time(s, S):.2f}")
+print(f"hitting cost: {sS.hitting_cost(s, S):.2f}")
+print(f"average cost: {sS.average_cost(s, S):.2f}")
 
-TsS = TsSPolicy(D, l, h, b, K)
+TsS = TsSPolicy(D, leadtime, h, b, K)
 
 print("TsS policy")
-print("average cost:", TsS.average_cost(T=1, s=s, S=S))
-print("average cost:", TsS.average_cost(T=2, s=s, S=S))
-print("average cost:", TsS.average_cost(T=10, s=s, S=S))
+print(f"average cost: {TsS.average_cost(T=1, s=s, S=S):.2f}")
+print(f"average cost: {TsS.average_cost(T=2, s=s, S=S):.2f}")
+print(f"average cost: {TsS.average_cost(T=10, s=s, S=S):.2f}")
 
-TS = TSPolicy(D, l, h, b, K)
+TS = TSPolicy(D, leadtime, h, b, K)
 
 print("TS policy")
-print("average cost:", TS.average_cost(T=1, S=S))
-print("average cost:", TS.average_cost(T=2, S=S))
-print("average cost:", TS.average_cost(T=10, S=S))
-print("average cost:", TS.average_cost(T=20, S=S))
+print(f"average cost: {TS.average_cost(T=1, S=S):.2f}")
+print(f"average cost: {TS.average_cost(T=2, S=S):.2f}")
+print(f"average cost: {TS.average_cost(T=10, S=S):.2f}")
+print(f"average cost: {TS.average_cost(T=20, S=S):.2f}")

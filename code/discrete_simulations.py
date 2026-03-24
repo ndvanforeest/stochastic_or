@@ -81,7 +81,7 @@ d, L = compute_queue_length(a, c, L0)
 print(f"{L.mean()=:.2f}, {L.var()=:.2f}")
 
 def make_vector_mean_scv(mu, scv, num):
-    "vector of iid rvs with a given mean mu and scv."
+    "Vector of iid rvs with a given mean mu and scv."
     p = 1 / (1 + scv)
     b = mu / p
     vec = b * rng.binomial(1, p, size=num)

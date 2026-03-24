@@ -1,4 +1,4 @@
-from random_variable import RV
+from random_variable import NumericRV as RV
 
 labda_B, mu = 1, 3
 B = RV({1: 1, 2: 1, 3: 1})
@@ -7,8 +7,7 @@ rho_B = labda_B / mu
 
 
 def mxm1(eps=1e-10):
-    "Compute stationary distribution of number of job in the system."
-    "We the probabilities decrease geometrically fast."
+    "Compute stationary distribution of number of jobs in the system."
     if rho >= 1:
         print("The load is too high")
         quit()

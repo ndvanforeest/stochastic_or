@@ -6,18 +6,6 @@ def normalize(pmf):
     return {k: pk / norm for k, pk in pmf.items()}
 
 
-def grid_search(grid, f):
-    "Minimize a f on the grid."
-    best_x, best_value = None, float('inf')
-    for x in grid:
-        if not isinstance(x, (tuple, list)):
-            x = (x,)
-        value = f(*x)
-        if value < best_value:
-            best_x, best_value = x, value
-    return best_x, best_value
-
-
 def Plus(x):
     if isinstance(x, (int, float)):
         return max(x, 0)
@@ -34,3 +22,15 @@ def Min(x):
         return [Min(v) for v in x]
     else:
         return Plus(-x)
+
+def grid_search(grid, f):
+    "Minimize a f on the grid."
+    best_x, best_value = None, float('inf')
+    for x in grid:
+        if not isinstance(x, (tuple, list)):
+            # allow unpacking *x for non-iterable x
+            x = (x,)
+        value = f(*x)
+        if value < best_value:
+            best_x, best_value = x, value
+    return best_x, best_value

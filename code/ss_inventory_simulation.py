@@ -4,7 +4,7 @@ from numpy.random import default_rng
 import random_variable as rv
 from  functions import Plus, Min
 
-from lighthouse_case import D, K, N, l, h, b
+from lighthouse_case import D, K, N, leadtime, h, b
 
 def simulate_sS(demands, s, S):
     P = np.zeros(N)  # inventory position
@@ -17,10 +17,10 @@ def simulate_sS(demands, s, S):
         Q[t] = (S - Pprime) * (Pprime <= s)
         P[t] = Pprime + Q[t]
 
-    for t in range(1, l):
+    for t in range(1, leadtime):
         IL[t] = IL[t - 1] - demands[t - 1]
-    for t in range(min(l, N), N):
-        IL[t] = IL[t - 1] - demands[t - 1] + Q[t - l]
+    for t in range(min(leadtime, N), N):
+        IL[t] = IL[t - 1] - demands[t - 1] + Q[t - leadtime]
 
     return P, IL, Q
 
@@ -37,7 +37,7 @@ def beta(demands, IL):
 
 
 def alpha_c(IL, Q):
-    return ((Q[:-l] > 0) * (IL[l - 1 : -1] >= 0)).sum() / (Q[:-l] > 0).sum()
+    return ((Q[:-leadtime] > 0) * (IL[leadtime - 1 : -1] >= 0)).sum() / (Q[:-leadtime] > 0).sum()
 
 rng = default_rng(3)  # set the seed
 demands = D.rvs(size=N, random_state=rng)

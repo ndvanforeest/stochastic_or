@@ -4,17 +4,17 @@ import numpy as np
 from random_variable import NumericRV as RV
 from functions import Plus, Min
 
-from lighthouse_case import D, K, N, l, h, b
+from lighthouse_case import D, K, N, leadtime, h, b
 
 class Basestock:
-    """Implements KPIs for a basestock inventory system."""
+    """Implements KPIs for a base-stock inventory system."""
 
-    def __init__(self, D, l, h, b):
+    def __init__(self, D, leadtime, h, b):
         self.D = D
-        self.l = l
+        self.leadtime = leadtime
         self.h = h
         self.b = b
-        self.X = sum(self.D for _ in range(l)) if l > 0 else RV({0: 1})
+        self.X = sum(self.D for _ in range(leadtime)) if leadtime > 0 else RV({0: 1})
 
     @cache
     def IP(self, S):
@@ -44,9 +44,9 @@ class Basestock:
 
 S = 5
 
-base = Basestock(D, l, h, b)
+base = Basestock(D, leadtime, h, b)
 
-theta = l * D.mean()
+theta = leadtime * D.mean()
 print(np.isclose(base.IL(S).mean(), S - theta))
 print(
     np.isclose(

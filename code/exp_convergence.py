@@ -1,17 +1,3 @@
-"""
-Make the figure that shows the convergence rate to the uniform distribution of
-the probability mass function of a random walk on the circle.
-"""
-
-import matplotlib.pyplot as plt
-
-from random_variable import NumericRV as RV
-
-from fig_in_latex_format import apply_figure_settings
-
-apply_figure_settings()
-
-
 def mod(a, b):
     "Compute a modulo b where a can also be a RV."
     match a:
@@ -24,12 +10,17 @@ def mod(a, b):
         case _:
             raise ValueError("Unknown type passed to mod")
 
+import matplotlib.pyplot as plt
+from latex_figures import apply_figure_settings
+from random_variable import NumericRV as RV
+
+apply_figure_settings(use=True)
 
 step = RV({-1: 1 / 3, 0: 1 / 3, 1: 1 / 3})
-
+fig, [ax1, ax2] = plt.subplots(ncols=2, figsize=(6, 3))
 
 def minmax(cycle, num):
-    position = 0  # RV({0: 1})
+    position = RV({0: 1})
     mins, maxs = [], []
     for i in range(num):
         position = mod(position + step, cycle)
@@ -37,10 +28,6 @@ def minmax(cycle, num):
         mins.append(min(pmf))
         maxs.append(max(pmf))
     return mins, maxs
-
-
-fig, [ax1, ax2] = plt.subplots(ncols=2, figsize=(6, 3))
-
 
 cycle = 5
 num = 30
@@ -62,4 +49,5 @@ ax2.set_xlabel("Iteration")
 ax2.legend()
 
 fig.tight_layout()
+fig.savefig("../figures/exp_convergence.pdf")
 fig.savefig("../figures/exp_convergence.png", dpi=300)

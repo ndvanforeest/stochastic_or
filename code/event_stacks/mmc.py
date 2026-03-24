@@ -1,5 +1,4 @@
-"""M/M/c queue.  """
-
+"""M/M/c queue."""
 
 import math
 from dataclasses import dataclass
@@ -47,28 +46,3 @@ class MMC:
     @property
     def EJ(self):
         return self.EL / self.labda
-
-
-def test():
-    """Compare with the results for the MM1 queue"""
-    labda, mu = 3, 4
-    rho = labda / mu
-    mm1 = MMC(labda, mu, c=1)
-
-    assert math.isclose(mm1.rho, rho)
-
-    mm1_mean_sojourn_time = 1 / mu / (1 - rho)
-    assert math.isclose(mm1.EJ, mm1_mean_sojourn_time)
-
-    mm1_mean_waiting_time = rho / mu / (1 - rho)
-    assert math.isclose(mm1.EW, mm1_mean_waiting_time)
-
-    mm1_mean_queue_length = labda * mm1_mean_waiting_time
-    assert math.isclose(mm1.EQ, mm1_mean_queue_length)
-
-    mm1_mean_system_length = labda * mm1_mean_sojourn_time
-    assert math.isclose(mm1.EL, mm1_mean_system_length)
-
-
-if __name__ == '__main__':
-    test()
