@@ -1,10 +1,52 @@
 #+TITLE: Stochastic Operations Research
 
+Python code for the book /Sample Path Analysis and Simulation of Stochastic Systems/ by Nicky D. van Foreest.
 
-* Contents of the files and directories:
-- ~code~/: the python code I discuss in the book.
+* Dependencies
 
+Install the following packages:
+#+begin_src shell
+pip install random_variable latex_figures
+#+end_src
 
-* COMMENT Typos and changes
+Standard scientific Python packages (~numpy~, ~scipy~, ~matplotlib~, ~seaborn~) are also required.
 
-Here is a list of things I changed in the files during the course. (I don't mention very simple typos, like spelling errors).
+* Code overview
+
+The files are listed in the order in which they appear in the book.
+
+** Chapter 1: Introduction
+
+- ~IBD_simulations.py~ : how uniform inter-arrival times lead to exponential inter-arrival times at the population level
+- ~exp_convergence.py~ : convergence of periodic arrivals to a uniform distribution on the circle
+- ~functions.py~ : helper functions (Plus, Min, normalize, grid_search)
+
+** Chapter 2: Construction of Simple Discrete-time Stochastic Processes
+
+- ~psychiatrists.py~ : psychiatrists case with holiday schedules and queue length control
+- ~nurse.py~ : nurse allocation between two wards with threshold control
+- ~n_policy_figure.py~ : N-policy for switching a server on/off
+- ~discrete_simulations.py~ : queue length dynamics, stability, variability, and tandem networks
+- ~random_walk.py~ : random walks and their reflection
+- ~lighthouse_case.py~ : model parameters for the Lighthouse Company inventory case
+- ~ss_inventory_simulation.py~ : simulation of an (s,S) inventory system
+
+** Chapter 3: Construction of Simple Continuous-time Stochastic Processes
+
+- ~waiting_time_distribution.py~ : exact and simulated waiting time distributions for the G/G/1 queue
+- ~plot_virtual_waiting_time.py~ : work process and system size using heap queues
+- ~event_stacks/~ : discrete-event simulation framework and examples (see ~event_stacks/readme.org~)
+
+** Chapter 5: Exact Models
+
+- ~basestock.py~ : base-stock inventory policy for the Lighthouse case
+- ~qr.py~ : (Q,r) inventory policy for the Lighthouse case
+- ~inventory_base.py~ : base class for inventory models using hitting time analysis
+- ~TsS.py~ : (T,s,S) and (T,S) inventory policies
+- ~ss.py~ : (s,S) inventory policy
+- ~sS_tss_experiments.py~ : numerical experiments comparing inventory policies
+- ~batchqueues.py~ : M^B/M/1 queue with rejection policies
+
+** Chapter 6: Approximate Models
+
+- ~setups.py~ : effect of batch sizes on sojourn times with setup times
