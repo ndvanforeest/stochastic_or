@@ -1,6 +1,7 @@
 #+TITLE: Stochastic Operations Research
 
 Python code for the book /Sample Path Analysis and Simulation of Stochastic Systems/ by Nicky D. van Foreest.
+The book is available as [[file:stochastic-or.pdf][PDF]].
 
 * Dependencies
 
