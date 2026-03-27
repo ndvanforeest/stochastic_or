@@ -23,6 +23,23 @@ def mxm1(eps=1e-10):
         n += 1
     return RV({i: pi[i] for i in range(len(pi))})
 
+def complete_acceptance(K):
+    pi, n = {}, 0
+    pi[0] = 1
+    while B.sf(n - K) > 0:
+        pi[n + 1] = sum(pi[m] * B.sf(n - m) for m in range(min(n, K) + 1))
+        pi[n + 1] *= rho_B
+        n += 1
+    return RV(pi)
+
+def partial_acceptance(K):
+    pi, n = {}, 0
+    pi[0] = 1
+    while n < K:
+        pi[n + 1] = sum(pi[m] * B.sf(n - m) for m in range(n + 1))
+        pi[n + 1] *= rho_B
+        n += 1
+    return RV(pi)
 
 def complete_rejection(K):
     pi, n = {}, 0
@@ -34,27 +51,6 @@ def complete_rejection(K):
         pi[n + 1] *= rho_B
         n += 1
     return RV(pi)
-
-
-def partial_acceptance(K):
-    pi, n = {}, 0
-    pi[0] = 1
-    while n < K:
-        pi[n + 1] = sum(pi[m] * B.sf(n - m) for m in range(n + 1))
-        pi[n + 1] *= rho_B
-        n += 1
-    return RV(pi)
-
-
-def complete_acceptance(K):
-    pi, n = {}, 0
-    pi[0] = 1
-    while B.sf(n - K) > 0:
-        pi[n + 1] = sum(pi[m] * B.sf(n - m) for m in range(min(n, K) + 1))
-        pi[n + 1] *= rho_B
-        n += 1
-    return RV(pi)
-
 
 pi = mxm1()
 print(pi.mean())
